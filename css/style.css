@@ -1,0 +1,25 @@
+h4{
+	color: #772953;
+}
+.padding-0{
+	padding: 0 2px;
+}
+.navbar{
+	border-radius: 0;
+	text-align: center;
+	color: white;
+}
+#trace{
+	border-top: 1px solid #eeeeee;
+	margin-top:20px;
+	padding: 20px;
+}
+textarea.form-control{
+	min-height: 231px;
+}
+.border-bottom{
+	border-bottom: 1px solid #eeeeee;
+}
+#IFIDBufferHead {
+	font-weight: bold;
+}

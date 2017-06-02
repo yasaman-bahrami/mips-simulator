@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>MIPS Machine</title>
+
+    <meta name="description" content="Source code generated using layoutit.com">
+    <meta name="author" content="LayoutIt!">
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+  </head>
+  <body>
+
+    <div class="container-fluid">
+	<div class="row">
+		<nav class="navbar navbar-inverse">
+			<h2>
+				MIPS Machine
+			</h2>
+		</nav>
+		<div class="col-md-12">
+			<div class="row" id="input">
+				<div class="col-md-4">
+					<h4>
+						Instruction:
+					</h4>
+					<div class="col-md-3 padding-0">
+						<select class="form-control" id="opcode">
+							<option>add</option>
+							<option>sub</option>
+							<option>lw</option>
+							<option>sw</option>
+							<option>beq</option>
+						</select>
+					</div>
+					<div class="col-md-3 padding-0">
+						<input type="number" class="form-control" placeholder="operand1" id="operand1">
+					</div>
+					<div class="col-md-3 padding-0">
+						<input type="number" class="form-control" placeholder="operand2" id="operand2">
+					</div>
+					<div class="col-md-3 padding-0">
+						<input type="number" class="form-control" placeholder="operand3" id="operand3">
+					</div>
+					<div class="col-md-4" id="trace">
+						<input type="number" class="form-control" placeholder="pc" id="pc">
+					</div>
+					<div class="col-md-8" id="trace">
+						<a onclick="trace()" class="btn btn-primary">Go Tracing!</a>
+					</div>
+					<div class="col-md-12">
+						<div class="panel panel-default">
+							<div class="panel-heading">Semantics:</div>
+							<div class="panel-body">
+								<div id="semantics">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<h4>
+						Registers:
+					</h4>
+					<div class="form-group">
+						<textarea class="form-control" rows="3" id="registers"></textarea>
+						<span class="help-block">The initial values of the relevant registers R1 to R30.</span>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<h4>
+						Data Memory:
+					</h4>
+					<div class="form-group">
+						<textarea class="form-control" rows="3" id="dataMemory"></textarea>
+						<span class="help-block">The initial values of the relevant locations in the Data Memory.</span>
+					</div>
+				</div>
+			</div>
+			<nav class="navbar navbar-default">
+				<h3>
+					Outputs:
+				</h3>
+			</nav>
+			
+			<h4>
+				Control signal vector:
+			</h4>
+			<div class="row border-bottom">
+				<div class="col-md-4">
+					<div class="panel panel-default">
+						<div class="panel-heading">EX:</div>
+						<div class="panel-body">
+							<table class="table table-striped table-hover ">
+								<thead>
+									<tr>
+										<th>Reg Dst</th>
+										<th>ALU Op</th>
+										<th>ALU Src</th>
+									</tr>
+								</thead>
+								<tbody id="EXControllers">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="panel panel-default">
+						<div class="panel-heading">MEM:</div>
+						<div class="panel-body">
+							<table class="table table-striped table-hover ">
+								<thead>
+									<tr>
+										<th>Branch</th>
+										<th>Mem Read</th>
+										<th>Mem Write</th>
+									</tr>
+								</thead>
+								<tbody id="MEMControllers">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="panel panel-default">
+						<div class="panel-heading">WB:</div>
+						<div class="panel-body">
+							<table class="table table-striped table-hover ">
+								<thead>
+									<tr>
+										<th>Reg Write</th>
+										<th>Memto Reg</th>
+									</tr>
+								</thead>
+								<tbody id="WBControllers">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			<h4>
+				Data ports, Data paths and the interstage buffers:
+			</h4>
+			<div class="row border-bottom">
+				<div class="col-md-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">IF Stage:</div>
+						<div class="panel-body">
+							<table class="table table-striped table-hover ">
+								<thead>
+									<th>Read Address</th>
+									<th>MUX3-1</th>
+									<th>MUX3-0</th>
+								</thead>
+								<tbody id="IFStageBody">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">IF/ID BUFFER:</div>
+						<div class="panel-body">
+							<table class="table table-striped table-hover " id="IFIDBuffer">
+								<thead id="IFIDBufferHead">
+									<th>Op</th>
+									<th>Rs</th>
+									<th>Rt</th>
+									<th>Rd</th>
+									<th>Shamt</th>
+									<th>Funct</th>
+									<th>Pc</th>
+								</thead>
+								<tbody id="IFIDBufferBody">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">ID Stage:</div>
+						<div class="panel-body">
+							<table class="table table-striped table-hover">
+								<thead>
+									<th>[15..11]</th>
+									<th>[20..16]</th>
+									<th>[15..0]</th>
+									<th>Write Data</th>
+									<th>Write Register</th>
+									<th>Read Register2</th>
+									<th>Read Register1</th>
+									<th>Read Data2</th>
+									<th>Read Data1</th>
+								</thead>
+								<tbody id="IDStageBody">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">ID/EX BUFFER:</div>
+						<div class="panel-body">
+							<table class="table table-striped table-hover ">
+								<thead>
+									<tr>
+										<th>Rd</th>
+										<th>[20..16]</th>
+										<th>[15..0]</th>
+										<th>Read Data1</th>
+										<th>Read Data2</th>
+										<th>pc</th>
+									</tr>
+								</thead>
+								<tbody id="IDEXBufferBody">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">EX Stage:</div>
+						<div class="panel-body">
+							<table class="table table-striped table-hover">
+								<thead>
+									<th>MUX12-1</th>
+									<th>MUX12-0</th>
+									<th>ALU Control</th>
+									<th>MUX11-1</th>
+									<th>MUX11-0</th>
+									<th>ALU Input2</th>
+									<th>ALU Input1</th>
+									<th>ALU Result</th>
+									<th>Zero</th>
+									<th>Add Input2</th>
+									<th>Add Input1</th>
+									<th>Add Result</th>
+								</thead>
+								<tbody id="EXStageBody">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">EX/MEM BUFFER:</div>
+						<div class="panel-body">
+							<table class="table table-striped table-hover ">
+								<thead>
+									<tr>
+										<th>MUX12</th>
+										<th>ReadData2</th>
+										<th>ALU Result</th>
+										<th>Zero</th>
+										<th>Add Result</th>
+									</tr>
+								</thead>
+								<tbody id="EXMEMBufferBody">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">MEM Stage:</div>
+						<div class="panel-body">
+							<table class="table table-striped table-hover ">
+								<thead>
+									<tr>
+										<th>Write Data</th>
+										<th>Write Address</th>
+										<th>Read Address</th>
+										<th>Read Data</th>
+									</tr>
+								</thead>
+								<tbody id="MEMStageBody">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">MEM/WB BUFFER:</div>
+						<div class="panel-body">
+							<table class="table table-striped table-hover ">
+								<thead>
+									<tr>
+										<th>Rd</th>
+										<th>ALU Result</th>
+										<th>Read Data</th>
+									</tr>
+								</thead>
+								<tbody id="MEMWBBufferBody">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">WB Stage:</div>
+						<div class="panel-body">
+							<table class="table table-striped table-hover ">
+								<thead>
+									<tr>
+										<th>MUX14-0</th>
+										<th>MUX14-1</th>
+										<th>MUX14Result</th>
+									</tr>
+								</thead>
+								<tbody id="WBStageBody">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/scripts.js"></script>
+	<script src="js/MIPS/IFStage.js"></script>
+	<script src="js/MIPS/IDStage.js"></script>
+	<script src="js/MIPS/EXStage.js"></script>
+	<script src="js/MIPS/MEMStage.js"></script>
+	<script src="js/MIPS/WBStage.js"></script>
+	<script src="js/MIPS/IF-IDBuffer.js"></script>
+	<script src="js/MIPS/ID-EXBuffer.js"></script>
+	<script src="js/MIPS/EX-MEMBuffer.js"></script>
+	<script src="js/MIPS/MEM-WBBuffer.js"></script>
+	<script src="js/MIPS/controller.js"></script>
+	<script> 
+		function trace() {
+			var pc = document.getElementById("pc").value;
+			var readAddressIM = pc;
+			var opcode = document.getElementById("opcode").value;
+			var operand1 = document.getElementById("operand1").value;
+			var operand2 = document.getElementById("operand2").value;
+			var operand3 = document.getElementById("operand3").value;
+			var controllers = setControllers(opcode);
+			/* ------ IF Stage ------*/
+			pc = pcAdder(pc);
+			document.getElementById("semantics").innerHTML = showSemantics(opcode, operand1, operand2, operand3);
+			/* ------ IF/ID Buffer ------*/
+			var IFIDBuffer = setIFIDBuffer(opcode, operand1, operand2, operand3,pc);
+			setTableHeader(document.getElementById("IFIDBufferHead"),opcode);
+			insertTableRow(document.getElementById("IFIDBufferBody"), IFIDBuffer);
+			/* ------ ID Stage ------*/
+			var register = registers(IFIDBuffer, (document.getElementById("registers").value));
+			/* ------ ID/EX Buffer ------*/
+			var IDEXBuffer = setIDEXBuffer(opcode, register, IFIDBuffer[2], IFIDBuffer[3], pc);
+			insertTableRow(document.getElementById("IDEXBufferBody"), IDEXBuffer);
+			/* ------ EX Stage ------*/
+			var MUX12Result = MUX12(IDEXBuffer[0], IDEXBuffer[1], controllers[0]);
+			var ALUControlValueResult = ALUControlValue(IDEXBuffer[2], controllers[1]);
+			var MUX11Result = MUX11(IDEXBuffer[2], IDEXBuffer[3], controllers[2]);
+			var ALUResult = ALU(IDEXBuffer[4], MUX11Result, ALUControlValueResult);
+			var shiftLeft2Result = shiftLeft2(IDEXBuffer[2]);
+			var addResult = add(shiftLeft2Result, IDEXBuffer[5]);
+			var EXControllers = [controllers[0], controllers[1], controllers[2]];
+			insertTableRow(document.getElementById("EXControllers"), EXControllers);
+			/* ------ EX/MEM Buffer ------*/
+			var EXMEMBuffer = setEXMEMBuffer(MUX12Result, IDEXBuffer[3], ALUResult[1], ALUResult[0], addResult, controllers[3]);
+			insertTableRow(document.getElementById("EXMEMBufferBody"), EXMEMBuffer);
+			/* ------ MEM Stage ------*/
+			var readData = DataMemory(EXMEMBuffer[1], EXMEMBuffer[2], controllers[4], controllers[5], document.getElementById("dataMemory").value);
+			var branchResult = branch(EXMEMBuffer[3], controllers[3]);
+			var MEMControllers = [controllers[3], controllers[4], controllers[5]];
+			insertTableRow(document.getElementById("MEMControllers"), MEMControllers);
+			
+			
+			/* ------ MEM/WB Buffer ------*/
+			var MEMWBBuffer = setMEMWBBuffer(EXMEMBuffer[0] ,EXMEMBuffer[2], readData);
+			insertTableRow(document.getElementById("MEMWBBufferBody"), MEMWBBuffer);
+			/* ------ WB Stage ------*/
+			var MUX14Result = MUX14(MEMWBBuffer[2], MEMWBBuffer[1], controllers[7]);
+			var WBControllers = [controllers[6], controllers[7]];
+			insertTableRow(document.getElementById("WBControllers"), WBControllers);
+			var registerResult = registerWrite(EXMEMBuffer[0], MUX14Result, controllers[6], (document.getElementById("registers").value));
+			if(registerOutput != ""){
+				document.getElementById("registers").value="";
+				document.getElementById("registers").value = registerOutput;
+			}
+			if(memoryOutput != ""){
+				document.getElementById("dataMemory").value="";
+				document.getElementById("dataMemory").value = memoryOutput;
+			}
+			var IFStage = [readAddressIM, EXMEMBuffer[4], pc];
+			insertTableRow(document.getElementById("IFStageBody"), IFStage);
+			var IDStage = [IDEXBuffer[0], IDEXBuffer[1], IDEXBuffer[2], MUX14Result, EXMEMBuffer[0], IFIDBuffer[2], IFIDBuffer[1], register[1], register[0]];
+			insertTableRow(document.getElementById("IDStageBody"), IDStage);
+			var EXStage = [IDEXBuffer[0], IDEXBuffer[1], IDEXBuffer[2], IDEXBuffer[2], IDEXBuffer[3], MUX11Result, IDEXBuffer[4], EXMEMBuffer[2], EXMEMBuffer[3], shiftLeft2Result, IDEXBuffer[5], EXMEMBuffer[4]];
+			insertTableRow(document.getElementById("EXStageBody"), EXStage);
+			var MEMStage = [EXMEMBuffer[1], EXMEMBuffer[2], EXMEMBuffer[2], MEMWBBuffer[2]];
+			insertTableRow(document.getElementById("MEMStageBody"), MEMStage);
+			var WBStage = [MEMWBBuffer[1], MEMWBBuffer[2], MUX14Result];
+			insertTableRow(document.getElementById("WBStageBody"), WBStage);
+			pc= MUX3(pc, EXMEMBuffer[4], branchResult);
+			document.getElementById("pc").value = pc;
+		}
+		
+		
+		function showSemantics(opcode, operand1, operand2, operand3){
+			var semantics;
+			if(opcode == "add")
+				semantics = "$"+operand1+" <-- $"+operand2+"+ $"+operand3;
+			else if(opcode == "sub")
+				semantics = "$"+operand1+" <-- $"+operand2+"- $"+operand3;
+			else if(opcode == "lw")
+				semantics = "$"+operand1+" <-- Memory[ $"+operand3+"+ "+operand2+"]";
+			else if(opcode == "sw")
+				semantics = "Memory[ $"+operand3+"+ "+operand2+"] <-- $"+operand1;
+			else if(opcode == "beq")
+				if(operand1 == operand2)
+					semantics = "pc <-- pc+4+4*"+operand3;
+				else
+					semantics = operand1 + " is not equal to "+operand2;
+			return(semantics);
+		}
+		function insertTableRow(element, cells){
+			element.innerHTML = "";
+			var row = element.insertRow(0);
+			for (var i=0; i<cells.length; i++)
+				row.insertCell(i).innerHTML = cells[i];
+		}
+		
+	</script>
+  </body>
+</html>
